@@ -1,0 +1,67 @@
+stages:
+
+  select_region:
+    cmd: python src/data/select_region.py data/raw/all_v2.csv data/interim/data_regional.csv 2661
+    deps:
+      - data/raw/all_v2.csv
+      - src/data/select_region.py
+    outs:
+      - data/interim/data_regional.csv
+
+  clean_data:
+    cmd: python src/data/clean_data.py data/interim/data_regional.csv data/interim/data_cleaned.csv
+    deps:
+      - data/interim/data_regional.csv
+      - src/data/clean_data.py
+    outs:
+      - data/interim/data_cleaned.csv
+
+  add_features:
+    cmd: python src/features/add_features.py data/interim/data_cleaned.csv data/interim/data_featured.csv
+    deps:
+      - data/interim/data_cleaned.csv
+      - src/features/add_features.py
+    outs:
+      - data/interim/data_featured.csv
+
+  get_osm_cafes_data:
+    cmd: python src/data/get_osm_cafes_data.py "https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=[out:json];nwr['addr:street'='Лиговский проспект']['addr:housenumber'=101];node[amenity=cafe](around:25000);out geom;" data/external/data_cafes.geojson
+    deps:
+      - src/data/get_osm_cafes_data.py
+    outs:
+      - data/external/data_cafes.geojson
+
+  add_cafes_in_radius:
+    cmd: python src/features/add_cafe_radius_features.py data/interim/data_featured.csv data/external/data_cafes.geojson data/processed/dataset.csv
+    deps:
+      - data/interim/data_featured.csv
+      - data/external/data_cafes.geojson
+      - src/features/add_cafe_radius_features.py
+    outs:
+      - data/processed/dataset.csv
+
+  prepare_datasets:
+    cmd: python src/models/prepare_datasets.py data/processed/dataset.csv data/processed/train.csv data/processed/test.csv
+    deps:
+      - data/processed/dataset.csv
+      - src/models/prepare_datasets.py
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  train:
+    cmd: python src/models/train.py data/processed/train.csv data/processed/test.csv models/model.clf
+    deps:
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - src/models/train.py
+    outs:
+      - models/model.clf
+
+  evaluate:
+    cmd: python src/models/evaluate.py data/processed/test.csv models/model.clf reports/scores.csv
+    deps:
+      - src/models/evaluate.py
+      - models/model.clf
+    outs:
+      - reports/scores.csv

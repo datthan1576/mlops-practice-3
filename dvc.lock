@@ -1,0 +1,132 @@
+schema: '2.0'
+stages:
+  transpose:
+    cmd: python src/data/select_region.py data/raw/all_v2.csv data/interim/data_regional.csv
+      2661
+    deps:
+    - path: data/raw/all_v2.csv
+      md5: 00af12733984c983b49f412cef232a9f
+      size: 408179741
+    - path: src/data/select_region.py
+      md5: 34da5d0ba8c5b0a3b97121f4780807aa
+      size: 809
+    outs:
+    - path: data/interim/data_regional.csv
+      md5: 985bf5b3d1ac2dfac93e2f5b991296b5
+      size: 36542699
+  select_region:
+    cmd: python src/data/select_region.py data/raw/all_v2.csv data/interim/data_regional.csv
+      2661
+    deps:
+    - path: data/raw/all_v2.csv
+      md5: 00af12733984c983b49f412cef232a9f
+      size: 408179741
+    - path: src/data/select_region.py
+      md5: a10209ac98a43fb10cfffab4bce14cb0
+      size: 822
+    outs:
+    - path: data/interim/data_regional.csv
+      md5: ce43fe511dd122670f536b2ef3d26136
+      size: 32927996
+  clean_data:
+    cmd: python src/data/clean_data.py data/interim/data_regional.csv data/interim/data_cleaned.csv
+    deps:
+    - path: data/interim/data_regional.csv
+      md5: ce43fe511dd122670f536b2ef3d26136
+      size: 32927996
+    - path: src/data/clean_data.py
+      md5: f234660aa815a4bae3ea8d2775bfe6c1
+      size: 1803
+    outs:
+    - path: data/interim/data_cleaned.csv
+      md5: bd17264194a7b570d4137b4403ad41a7
+      size: 28629519
+  add_features:
+    cmd: python src/features/add_features.py data/interim/data_cleaned.csv data/interim/data_featured.csv
+    deps:
+    - path: data/interim/data_cleaned.csv
+      md5: bd17264194a7b570d4137b4403ad41a7
+      size: 28629519
+    - path: src/features/add_features.py
+      md5: db51bf3074135298ab337f7711da7891
+      size: 979
+    outs:
+    - path: data/interim/data_featured.csv
+      md5: 51a2b1d452ed103ecf2745a0884a2f1f
+      size: 35934376
+  get_osm_cafes_data:
+    cmd: python src/data/get_osm_cafes_data.py "https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=[out:json];nwr['addr:street'='Лиговский
+      проспект']['addr:housenumber'=101];node[amenity=cafe](around:25000);out geom;"
+      data/external/data_cafes.geojson
+    deps:
+    - path: src/data/get_osm_cafes_data.py
+      md5: d2c8fed42242aa69c52e18153d69b4c6
+      size: 860
+    outs:
+    - path: data/external/data_cafes.geojson
+      md5: 7d8582868b309a515f171f4610cb411d
+      size: 1192556
+  add_cafes_in_radius:
+    cmd: python src/features/add_cafe_radius_features.py data/interim/data_featured.csv
+      data/external/data_cafes.geojson data/processed/dataset.csv
+    deps:
+    - path: data/external/data_cafes.geojson
+      md5: 7d8582868b309a515f171f4610cb411d
+      size: 1192556
+    - path: data/interim/data_featured.csv
+      md5: 51a2b1d452ed103ecf2745a0884a2f1f
+      size: 35934376
+    - path: src/features/add_cafe_radius_features.py
+      md5: 75777111f48c1d74d41d033ad9378167
+      size: 1984
+    outs:
+    - path: data/processed/dataset.csv
+      md5: 70b505446fc4c2a873d6beb6d0d15d4a
+      size: 53948721
+  prepare_datasets:
+    cmd: python src/models/prepare_datasets.py data/processed/dataset.csv data/processed/train.csv
+      data/processed/test.csv
+    deps:
+    - path: data/processed/dataset.csv
+      md5: 70b505446fc4c2a873d6beb6d0d15d4a
+      size: 53948721
+    - path: src/models/prepare_datasets.py
+      md5: 4b1b8ffd978ea2e2cf54cdcc34c8eef0
+      size: 916
+    outs:
+    - path: data/processed/test.csv
+      md5: c5d8fab40da61f4f2fe8b365de3054cf
+      size: 6818609
+    - path: data/processed/train.csv
+      md5: 53a61029d161c034cd1bd9e9a5d939d7
+      size: 20456103
+  train:
+    cmd: python src/models/train.py data/processed/train.csv data/processed/test.csv
+      models/model.clf
+    deps:
+    - path: data/processed/test.csv
+      md5: c5d8fab40da61f4f2fe8b365de3054cf
+      size: 6818609
+    - path: data/processed/train.csv
+      md5: 53a61029d161c034cd1bd9e9a5d939d7
+      size: 20456103
+    - path: src/models/train.py
+      md5: da0748c229e93310f5efde6adf2e0c04
+      size: 1613
+    outs:
+    - path: models/model.clf
+      md5: fb9adcaf463651a4fea115bfab6ec704
+      size: 12603304
+  evaluate:
+    cmd: python src/models/evaluate.py data/processed/test.csv models/model.clf reports/scores.csv
+    deps:
+    - path: models/model.clf
+      md5: fb9adcaf463651a4fea115bfab6ec704
+      size: 12603304
+    - path: src/models/evaluate.py
+      md5: b643c5a4601e060cf7862722264fc937
+      size: 922
+    outs:
+    - path: reports/scores.csv
+      md5: 6e86f3e8ec06e0bab5cd4c472b4041d6
+      size: 46

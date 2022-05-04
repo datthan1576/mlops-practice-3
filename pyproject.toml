@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "MLOps"
+version = "0.1.0"
+description = "MLOps course project"
+authors = ["Pavel Kikin <it-technologies@yandex.ru>"]
+license = "none"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^1.4.2"
+scikit-learn = "^1.0.2"
+xgboost = "^1.6.0"
+lightgbm = "^3.3.2"
+click = "^8.1.2"
+dvc = {extras = ["s3"], version = "^2.10.2"}
+snakemake = "^7.5.0"
+gdal = {path = "source/GDAL-3.4.2-cp39-cp39-win_amd64.whl"}
+pyproj = {path = "source/pyproj-3.2.1-cp39-cp39-win_amd64.whl"}
+fiona = {path = "source/Fiona-1.8.21-cp39-cp39-win_amd64.whl"}
+shapely = {path = "source/Shapely-1.8.1.post1-cp39-cp39-win_amd64.whl"}
+geopandas = {path = "source/geopandas-0.10.2-py2.py3-none-any.whl"}
+mlflow = "^1.25.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
