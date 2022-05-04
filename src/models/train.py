@@ -29,7 +29,7 @@ def train(input_paths: List[str], output_path: str):
         'objective': 'regression',
         'metric': {'l1'},
         'max_depth': 11,
-        'num_leaves': 140,
+        'num_leaves': 160,
         'learning_rate': 0.25,
         'feature_fraction': 0.9,
         'bagging_fraction': 0.9,
