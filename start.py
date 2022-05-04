@@ -1,16 +1,21 @@
-import src
-
-RAW_DATA_PATH = "data/raw/all_v2.csv"
-REGIONAL_DATA_PATH = "data/interim/data_regional.csv"
-CLEANED_DATA_PATH = "data/interim/data_cleaned.csv"
-FEATURED_DATA_PATH = "data/processed/data_featured.csv"
-REGION_ID = 2661
-
+import os
+from random import random, randint
+from mlflow import log_metric, log_param, log_artifacts
 
 if __name__ == "__main__":
-    src.select_region(RAW_DATA_PATH, REGIONAL_DATA_PATH, REGION_ID)
-    src.clean_data(REGIONAL_DATA_PATH, CLEANED_DATA_PATH)
-    src.add_features(CLEANED_DATA_PATH, FEATURED_DATA_PATH)
+    # Log a parameter (key-value pair)
+    log_param("param1", randint(0, 100))
 
+    # Log a metric; metrics can be updated throughout the run
+    log_metric("foo", random())
+    log_metric("foo", random() + 1)
+    log_metric("foo", random() + 2)
+
+    # Log an artifact (output file)
+    if not os.path.exists("outputs"):
+        os.makedirs("outputs")
+    with open("outputs/test.txt", "w") as f:
+        f.write("hello world!")
+    log_artifacts("outputs")
 
 

@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Users/OneDrive/MLOps%20course/%D0%91%D0%BB%D0%BE%D0%BA%206/mlops-course/mlruns/0/1986cf96ff244ce4b6a5fb9e4801c31c/artifacts
+end_time: 1651680795194
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 1986cf96ff244ce4b6a5fb9e4801c31c
+run_uuid: 1986cf96ff244ce4b6a5fb9e4801c31c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1651680795115
+status: 3
+tags: []
+user_id: it-te

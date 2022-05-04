@@ -50,18 +50,11 @@ stages:
       - data/processed/test.csv
 
   train:
-    cmd: python src/models/train.py data/processed/train.csv data/processed/test.csv models/model.clf
+    cmd: python src/models/train.py data/processed/train.csv data/processed/test.csv models/model.clf reports/metrics.json
     deps:
       - data/processed/train.csv
       - data/processed/test.csv
       - src/models/train.py
     outs:
       - models/model.clf
-
-  evaluate:
-    cmd: python src/models/evaluate.py data/processed/test.csv models/model.clf reports/scores.csv
-    deps:
-      - src/models/evaluate.py
-      - models/model.clf
-    outs:
-      - reports/scores.csv
+      - reports/metrics.json
